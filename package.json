@@ -1,0 +1,15 @@
+{
+  "name": "Discord-Study-BE",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/builders": "^1.7.0",
+    "@discordjs/rest": "^2.2.0",
+    "@supabase/supabase-js": "^2.38.4",
+    "discord-api-types": "^0.37.64",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1"
+  }
+}
