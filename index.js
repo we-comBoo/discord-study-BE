@@ -114,7 +114,6 @@ async function saveDuration(dsUId, dsGlobalName, dsTag, start, end, duration) {
   const { data, error, status } = await supabase
     .from("user")
     .insert({ dsUId, dsGlobalName, dsTag, start, end, duration })
-    .select();
 
   if (error) {
     console.log(error);
