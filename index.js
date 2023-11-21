@@ -60,63 +60,67 @@ const channelToTrack = process.env.VOICE_CHANNEL;
 
 const userDurations = new Map();
 
+
+function startDuration(userId){
+  // User joined the specified voice channel
+  console.log(
+    `${user.user.tag} joined ${newState.channel?.name}: ${startTime}`
+  );
+  // Record the start time
+  userDurations.set(userId, {
+    startTime: new Date(),
+    endTime: null,
+    totalDuration: 0,
+  });
+}
+
+function endDuration(durationInfo) {
+  durationInfo.endTime = new Date();
+  durationInfo.totalDuration = Math.floor(
+    (durationInfo.endTime.getTime() - durationInfo.startTime.getTime()) / 1000
+  );
+}
+
 client.on("voiceStateUpdate", (oldState, newState) => {
   const user = newState.member;
   // console.log(user)
 
   if (user && newState.channelId === channelToTrack) {
-    // User joined the specified voice channel
-    const startTime = new Date();
-    console.log(
-      `${user.user.tag} joined ${newState.channel?.name}: ${startTime}`
-    );
-    // Record the start time
-    userDurations.set(user.id, {
-      startTime: new Date(),
-      endTime: null,
-      totalDuration: 0,
-    });
+      // 이벤트 발생이 최초로 입장한 유저의 경우
+      if(userDurations.has(user.id)===false){
+          startDuration(user.id);
+      }
 
-    // You can save this information to Superbase or perform other actions
   } else if (
     user &&
     oldState.channelId === channelToTrack &&
     newState.channel === null
   ) {
     // User left the specified voice channel
-    const userUId = user.user.id;
-    const userTag = user.user.tag;
-    const userGlobalName = user.user.globalName;
-    const end = new Date();
+
     console.log(`${userGlobalName} left ${oldState.channel?.name}: ${end}`);
-    
 
-    const durationInfo = userDurations.get(user.id);
-    console.log(durationInfo);
+    const { id: userUId, tag: userTag, globalName: userGlobalName } = user.user;
 
-    if (durationInfo) {
-      // Calculate the duration and update the total duration
-      durationInfo.endTime = end;
-      durationInfo.totalDuration = Math.floor(
-        (durationInfo.endTime.getTime() - durationInfo.startTime.getTime()) /
-          1000
-      );
-      console.log(durationInfo);
-
+    if (userDurations.has(userUId)) {
+      const durationInfo = userDurations.get(userUId);
+      endDuration(durationInfo);
+      const { startTime, endTime, totalDuration } = durationInfo;
       saveDuration(
         userUId,
         userGlobalName,
         userTag,
-        durationInfo.startTime,
-        durationInfo.endTime,
-        durationInfo.totalDuration
+        startTime,
+        endTime,
+       totalDuration
       );
-
       // Remove the user from the tracking map
       userDurations.delete(user.id);
-
-      // You can save this information to Superbase or perform other actions
     }
+    
+
+
+
   }
 });
 async function saveDuration(dsUId, dsGlobalName, dsTag, start, end, duration) {
