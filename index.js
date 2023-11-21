@@ -76,13 +76,14 @@ client.on("voiceStateUpdate", (oldState, newState) => {
     // You can save this information to Superbase or perform other actions
   }
 
-  if (user && oldState.channelId === channelToTrack && !newState.channel) {
+  else if (user && oldState.channelId === channelToTrack && newState.channel===null) {
     // User left the specified voice channel
     const userUId = user.user.id
     const userTag = user.user.tag
     const userGlobalName = user.user.globalName
     const end = new Date()
     console.log(`${userGlobalName} left ${oldState.channel?.name}: ${end}`);
+    console.log(durationInfo)
 
     const durationInfo = userDurations.get(user.id);
 
