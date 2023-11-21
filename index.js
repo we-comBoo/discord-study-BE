@@ -87,7 +87,7 @@ client.on("voiceStateUpdate", (oldState, newState) => {
       if(userDurations.has(user.id)===false){
         // User joined the specified voice channel
         console.log(
-          `${user.user.tag} joined ${newState.channel?.name}: ${startTime}`
+          `${user.user.tag} joined ${newState.channel?.name}: ${new Date()}`
         );
         startDuration(user.id);
       }
@@ -102,7 +102,7 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 
 
     const { id: userUId, tag: userTag, globalName: userGlobalName } = user.user;
-        console.log(`${userGlobalName} left ${oldState.channel?.name}: ${end}`);
+        console.log(`${userGlobalName} left ${oldState.channel?.name}: ${new Date()}`);
 
     if (userDurations.has(userUId)) {
       const durationInfo = userDurations.get(userUId);
