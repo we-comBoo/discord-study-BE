@@ -62,10 +62,7 @@ const userDurations = new Map();
 
 
 function startDuration(userId){
-  // User joined the specified voice channel
-  console.log(
-    `${user.user.tag} joined ${newState.channel?.name}: ${startTime}`
-  );
+
   // Record the start time
   userDurations.set(userId, {
     startTime: new Date(),
@@ -88,7 +85,11 @@ client.on("voiceStateUpdate", (oldState, newState) => {
   if (user && newState.channelId === channelToTrack) {
       // 이벤트 발생이 최초로 입장한 유저의 경우
       if(userDurations.has(user.id)===false){
-          startDuration(user.id);
+        // User joined the specified voice channel
+        console.log(
+          `${user.user.tag} joined ${newState.channel?.name}: ${startTime}`
+        );
+        startDuration(user.id);
       }
 
   } else if (
@@ -98,9 +99,10 @@ client.on("voiceStateUpdate", (oldState, newState) => {
   ) {
     // User left the specified voice channel
 
-    console.log(`${userGlobalName} left ${oldState.channel?.name}: ${end}`);
+
 
     const { id: userUId, tag: userTag, globalName: userGlobalName } = user.user;
+        console.log(`${userGlobalName} left ${oldState.channel?.name}: ${end}`);
 
     if (userDurations.has(userUId)) {
       const durationInfo = userDurations.get(userUId);
