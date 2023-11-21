@@ -2,7 +2,6 @@
   "name": "Discord-Study-BE",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "license": "MIT",
   "dependencies": {
     "@discordjs/builders": "^1.7.0",

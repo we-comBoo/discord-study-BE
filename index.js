@@ -1,6 +1,6 @@
-import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
-import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
+const  { Client, GatewayIntentBits, REST, Routes } = require("discord.js");
+const { createClient } = require("@supabase/supabase-js");
+const dotenv =require("dotenv");
 dotenv.config();
 
 const client = new Client({
@@ -15,7 +15,7 @@ const client = new Client({
 // "YOUR_SUPABASE_URL", "YOUR_SUPABASE_API_KEY"
 const supabase = createClient(
   process.env.SUPABASE_URL,
- process.env.SUPABASE_API_KEY
+  process.env.SUPABASE_API_KEY
 );
 
 /*
@@ -51,7 +51,6 @@ createCommand();
 
 */
 
-
 client.once("ready", () => {
   console.log("Bot is ready!");
 });
@@ -63,6 +62,7 @@ const userDurations = new Map();
 
 client.on("voiceStateUpdate", (oldState, newState) => {
   const user = newState.member;
+  // console.log(user)
 
   if (user && newState.channelId === channelToTrack) {
     // User joined the specified voice channel
@@ -71,50 +71,60 @@ client.on("voiceStateUpdate", (oldState, newState) => {
       `${user.user.tag} joined ${newState.channel?.name}: ${startTime}`
     );
     // Record the start time
-    userDurations.set(user.id, { startTime: new Date(),endTime:null, totalDuration: 0 });
+    userDurations.set(user.id, {
+      startTime: new Date(),
+      endTime: null,
+      totalDuration: 0,
+    });
 
     // You can save this information to Superbase or perform other actions
-  }
-
-  else if (user && oldState.channelId === channelToTrack && newState.channel===null) {
+  } else if (
+    user &&
+    oldState.channelId === channelToTrack &&
+    newState.channel === null
+  ) {
     // User left the specified voice channel
-    const userUId = user.user.id
-    const userTag = user.user.tag
-    const userGlobalName = user.user.globalName
-    const end = new Date()
+    const userUId = user.user.id;
+    const userTag = user.user.tag;
+    const userGlobalName = user.user.globalName;
+    const end = new Date();
     console.log(`${userGlobalName} left ${oldState.channel?.name}: ${end}`);
-    console.log(durationInfo)
+    
 
     const durationInfo = userDurations.get(user.id);
+    console.log(durationInfo);
 
     if (durationInfo) {
       // Calculate the duration and update the total duration
-      durationInfo.endTime =end
-      durationInfo.totalDuration = Math.floor((durationInfo.endTime.getTime() - durationInfo.startTime.getTime())/1000);
-      console.log(durationInfo)
+      durationInfo.endTime = end;
+      durationInfo.totalDuration = Math.floor(
+        (durationInfo.endTime.getTime() - durationInfo.startTime.getTime()) /
+          1000
+      );
+      console.log(durationInfo);
 
-saveDuration(
-  userUId,
-  userGlobalName,
-  userTag,
-  durationInfo.startTime,
-  durationInfo.endTime,
-  durationInfo.totalDuration
-);
+      saveDuration(
+        userUId,
+        userGlobalName,
+        userTag,
+        durationInfo.startTime,
+        durationInfo.endTime,
+        durationInfo.totalDuration
+      );
 
       // Remove the user from the tracking map
       userDurations.delete(user.id);
 
-    // You can save this information to Superbase or perform other actions
+      // You can save this information to Superbase or perform other actions
+    }
   }
-  }
-})
+});
 async function saveDuration(dsUId, dsGlobalName, dsTag, start, end, duration) {
   // Save the duration to the Superbase database
 
   const { data, error, status } = await supabase
     .from("user")
-    .insert({ dsUId, dsGlobalName, dsTag, start, end, duration })
+    .insert({ dsUId, dsGlobalName, dsTag, start, end, duration });
 
   if (error) {
     console.log(error);
@@ -122,6 +132,4 @@ async function saveDuration(dsUId, dsGlobalName, dsTag, start, end, duration) {
     console.log(data, status);
   }
 }
-client.login(
-process.env.DISCORD_TOKEN
-);
+client.login(process.env.DISCORD_TOKEN);
