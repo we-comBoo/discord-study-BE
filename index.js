@@ -1,15 +1,10 @@
-
-const { createClient } = require("@supabase/supabase-js");
 const client = require("./client");
+const supabase = require("./supabase");
 const dotenv =require("dotenv");
 dotenv.config();
 
 
-// "YOUR_SUPABASE_URL", "YOUR_SUPABASE_API_KEY"
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_API_KEY
-);
+
 
 /*
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
