@@ -1,16 +1,9 @@
-const  { Client, GatewayIntentBits, REST, Routes } = require("discord.js");
+
 const { createClient } = require("@supabase/supabase-js");
+const client = require("./client");
 const dotenv =require("dotenv");
 dotenv.config();
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-});
 
 // "YOUR_SUPABASE_URL", "YOUR_SUPABASE_API_KEY"
 const supabase = createClient(
