@@ -1,3 +1,4 @@
+const supabase = require("./supabase");
 
 const userDurations = new Map();
 
@@ -10,18 +11,12 @@ function startDuration(userId) {
   });
 }
 
-
-
-
-
-
 function endDuration(durationInfo) {
   durationInfo.endTime = new Date();
   durationInfo.totalDuration = Math.floor(
     (durationInfo.endTime.getTime() - durationInfo.startTime.getTime()) / 1000
   );
 }
-
 
 async function saveDuration(dsUId, dsGlobalName, dsTag, start, end, duration) {
   // Save the duration to the Superbase database
@@ -41,10 +36,9 @@ async function saveDuration(dsUId, dsGlobalName, dsTag, start, end, duration) {
   }
 }
 
-
 module.exports = {
   startDuration,
   endDuration,
   saveDuration,
-  userDurations
-}
+  userDurations,
+};

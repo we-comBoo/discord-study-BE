@@ -1,5 +1,5 @@
 const client = require("./client");
-const supabase = require("./supabase");
+
 const {
   startDuration,
   endDuration,
