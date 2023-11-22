@@ -1,82 +1,25 @@
-const  { Client, GatewayIntentBits, REST, Routes } = require("discord.js");
-const { createClient } = require("@supabase/supabase-js");
+const client = require("./client");
+const supabase = require("./supabase");
+const {
+  startDuration,
+  endDuration,
+  userDurations,
+  saveDuration,
+} = require("./duration");
 const dotenv =require("dotenv");
 dotenv.config();
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-});
-
-// "YOUR_SUPABASE_URL", "YOUR_SUPABASE_API_KEY"
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_API_KEY
-);
-
-/*
-const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
 
-async function createCommand() {
-const commands = [
-  {
-    name: "ping",
-    description: "Replies with Pong!",
-  },
-];
-  try {
-    console.log("Started refreshing application (/) commands.");
-    await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.DISCORD_CLIENT_ID,
-        process.env.DISCORD_SERVER_ID
-      ),
-      {
-        body: commands,
-      }
-    );
 
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-createCommand();
-
-
-*/
 
 client.once("ready", () => {
   console.log("Bot is ready!");
 });
 
+
 // YOUR_VOICE_CHANNEL_ID
 const channelToTrack = process.env.VOICE_CHANNEL;
-
-const userDurations = new Map();
-
-
-function startDuration(userId){
-
-  // Record the start time
-  userDurations.set(userId, {
-    startTime: new Date(),
-    endTime: null,
-    totalDuration: 0,
-  });
-}
-
-function endDuration(durationInfo) {
-  durationInfo.endTime = new Date();
-  durationInfo.totalDuration = Math.floor(
-    (durationInfo.endTime.getTime() - durationInfo.startTime.getTime()) / 1000
-  );
-}
 
 client.on("voiceStateUpdate", (oldState, newState) => {
   const user = newState.member;
@@ -105,9 +48,9 @@ client.on("voiceStateUpdate", (oldState, newState) => {
         console.log(`${userGlobalName} left ${oldState.channel?.name}: ${new Date()}`);
 
     if (userDurations.has(userUId)) {
-      const durationInfo = userDurations.get(userUId);
-      endDuration(durationInfo);
-      const { startTime, endTime, totalDuration } = durationInfo;
+      const userDurationInfo = userDurations.get(userUId);
+      endDuration(userDurationInfo);
+      const { startTime, endTime, totalDuration } = userDurationInfo;
       saveDuration(
         userUId,
         userGlobalName,
@@ -125,17 +68,8 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 
   }
 });
-async function saveDuration(dsUId, dsGlobalName, dsTag, start, end, duration) {
-  // Save the duration to the Superbase database
 
-  const { data, error, status } = await supabase
-    .from("user")
-    .insert({ dsUId, dsGlobalName, dsTag, start, end, duration });
-
-  if (error) {
-    console.log(error);
-  } else {
-    console.log(data, status);
-  }
-}
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN).catch(error=>{
+  console.log(err);
+  process.exit(1)
+});
